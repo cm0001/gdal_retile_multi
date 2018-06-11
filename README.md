@@ -1,6 +1,6 @@
 # gdal_retile_multi
 Expanding on the great work of Christian Mueller (also Chris Giesey & Elijah Robison) called gdal_retile.py.<br><br>
-This code modification to gdal_retile allows multiple 'gdal_retile' processes to work concurrently to tile one raster dataset 
+This code modification to gdal_retile allows multiple 'gdal_retile' processes to concurrently tile one raster dataset 
 for publishing as a Geoserver Image Pyramid layer.
 <br><br>
 This process is also interruptible and resumable.
