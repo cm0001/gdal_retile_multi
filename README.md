@@ -5,7 +5,7 @@ for publishing as an Image Pyramid layer.
 <br><br>
 The goal is to reduce the time required to tile large raster datasets by allowing multiple processes to 'divide-and-conquer' the task.
 <br><br>
-This process is also **interruptible** and **resumable**.
+**'gdal_retile_multi'** is also **interruptible** and **resumable**.
 <br><br>
 Here is a visual of the idea. **See the WIKI** for a few more details.<br>
 ![gdal_retile_multi_n_n](https://github.com/cm0001/gdal_retile_multi/blob/master/blob/master/img/gdal_retile_multi_n_n.png)
