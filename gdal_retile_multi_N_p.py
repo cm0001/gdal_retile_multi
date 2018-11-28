@@ -49,13 +49,13 @@
 #       could make 16 copies of this file and rename them to something that makes
 #       sense to you. I name the files using the following strategy: 
 #
-#       "gdal_retile_multi_p_n" where p = 16 (totalProcs) and 
-#                                     n = 1...16 (this files process number)
+#       "gdal_retile_multi_N_p" where N = 16 (totalProcs) and 
+#                                     p = 1...16 (this files process number)
 #
 #       "gdal_retile_multi_16_1.py", "gdal_retile_multi_16_2.py"... etc.
 #
 #       ***NOTE*** Variables at the bottom of this python code should be edited
-#       similarly (ie - thisProc = p and totalProcs=4) They both occur twice!!
+#       similarly (ie - thisProc = p and totalProcs=N) They both occur twice!!
 #
 #       Each gdal_retile_multi_n script can then be ran as a separate "process"
 #       or job running on 1 or multiple computers. Each process will wait until
