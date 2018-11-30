@@ -1,6 +1,6 @@
 # gdal_retile_multi
 Expanding on the great work of Christian Mueller (also Chris Giesey & Elijah Robison) called gdal_retile.py.<br><br>
-This code modification to **'gdal_retile'** allows multiple **'gdal_retile_multi'** processes to work concurrently in tiling one georeferenced raster dataset (or set of raster tiles) for publishing as an Image Pyramid layer for serving as a WMS/WMTS via web services provided by [Geoserver](http://geoserver.org/)/[GeoWebCache](https://www.geowebcache.org/).
+This code modification to **'gdal_retile'** allows multiple **'gdal_retile_multi'** processes to work concurrently in tiling one georeferenced raster dataset (or set of raster tiles) for publishing as an ImagePyramid layer for serving as a WMS/WMTS via web services provided by [Geoserver](http://geoserver.org/)/[GeoWebCache](https://www.geowebcache.org/).
 <br><br>
 The goal is to **reduce the time required to tile (pyramid) large raster datasets** by allowing multiple processes to 'divide-and-conquer' the task.
 <br><br>
