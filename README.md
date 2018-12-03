@@ -4,7 +4,7 @@ This code modification to **_'gdal_retile'_** allows multiple **_'gdal_retile_mu
 <br><br>
 The goal is to **_reduce the time required to ImagePyramid large raster datasets_** by allowing multiple processes to **_'divide-and-conquer'_** the task.
 <br><br>
-**_'gdal_retile_multi'_** is also **_interruptible_** and **_resumable_**. It can be used to tile a single raster while running on one machine or distributed across as many machines as you like.
+**_'gdal_retile_multi'_** is also **_interruptible_** and **_resumable_**. It can be used to **_run on a single pc/server or distributed across as many machines as you like_**.
 <br><br>
 Here is a visual of the idea. **See the  [WIKI](https://github.com/cm0001/gdal_retile_multi/wiki/1-gdal_retile_multi-idea)** for a few more details.<br>
 ![gdal_retile_multi_n_n](https://github.com/cm0001/gdal_retile_multi/blob/master/blob/master/img/gdal_retile_multi_n_n.png)
