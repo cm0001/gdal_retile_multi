@@ -6,5 +6,5 @@ The goal is to **_reduce the time required to ImagePyramid large raster datasets
 <br><br>
 **_'gdal_retile_multi'_** is also **_interruptible_** and **_resumable_**. It can be used to **_run on a single pc/server or distributed across as many machines as you like_**.
 <br><br>
-Here is a visual of the idea. **See the  [WIKI](https://github.com/cm0001/gdal_retile_multi/wiki/1-gdal_retile_multi-idea)** for a few more details.<br>
+Here is a visual of the idea. **See the  [WIKI](https://github.com/cm0001/gdal_retile_multi/wiki)** for a few more details.<br>
 ![gdal_retile_multi_n_n](https://github.com/cm0001/gdal_retile_multi/blob/master/blob/master/img/gdal_retile_multi_n_n.png)
