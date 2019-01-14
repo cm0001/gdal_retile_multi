@@ -979,13 +979,9 @@ def main(args = None):
         
     if PyramidOnly==False:
        dsCreatedTileIndex = tileImage(minfo, ti)
-       # reassign for Levels > 0
-       dsCreatedTileIndex = tileIndexDS
-       # tileIndexDS.Destroy()
+       tileIndexDS.Destroy()
     else:
        dsCreatedTileIndex=tileIndexDS
-	   
-    tileIndexDS.Destroy()
 	
     if Levels > 0:
        buildPyramid(minfo, dsCreatedTileIndex, TileWidth, TileHeight)
