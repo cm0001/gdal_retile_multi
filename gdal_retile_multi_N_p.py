@@ -30,9 +30,12 @@
 ###############################################################################
 #
 # What: gdal_retile_multi_N_p.py
+#
+# Date: 02/27/2024 - edited for numpy changes only - cm
+#
 # Date: 01/23/2018
-# Author: cmood
-# Purpose: 
+# Author: cm
+# Purpose:
 # Altered gdal_retile so a single LARGE imagepyramid tiling job could 
 # be divided/ditributed among multiple gdal_retile tasks/jobs/processes running
 # on one or multiple computers.
@@ -61,6 +64,27 @@
 #       or job running on 1 or multiple computers. Each process will wait until
 #       the last tile in all other processes has completed before continuing
 #       to the next level. This is also completely interruptible and resumable.
+#
+# tips on running this code:
+#
+# Establish the base level (level 0) mosaic first
+# Open 16 (or N)  OSGEO command windows on one or multiple pc's... in each command window run a gdal_retile_multi process...
+# gdal_retile_multi_16_1.py <<gdal_retile options here>> -levels 1 -targetDir \\some_path \\some_big_raster_VRT
+# gdal_retile_multi_16_2.py <<gdal_retile options here>> -levels 1 -targetDir \\some_path \\some_big_raster_VRT
+# gdal_retile_multi_16_3.py <<gdal_retile options here>> -levels 1 -targetDir \\some_path \\some_big_raster_VRT
+#  ...
+# gdal_retile_multi_16_16.py <<gdal_retile options here>> -targetDir \\some_path \\some_big_raster_VRT
+# 
+# Let the level zero (0) pyramid layer complete fully
+# then delete the level 1 created from the above processes.
+# Next, perform the "pyramidOnly" runs below...to establish all other pyramid levels (levels > 0)
+#
+# gdal_retile_multi_16_1.py <<gdal_retile options here>> –pyramidOnly -levels 8 -useDirForEachRow -targetDir \\some_path \\some_big_raster_VRT
+# gdal_retile_multi_16_2.py <<gdal_retile options here>> –pyramidOnly -levels 8 -useDirForEachRow -targetDir \\some_path \\some_big_raster_VRT
+# gdal_retile_multi_16_3.py <<gdal_retile options here>> –pyramidOnly -levels 8 -useDirForEachRow -targetDir \\some_path \\some_big_raster_VRT
+#  ...
+# gdal_retile_multi_16_16.py <<gdal_retile options here>> –pyramidOnly -levels 8 -useDirForEachRow -targetDir \\some_path \\some_big_raster_VRT
+#
 
 try:
     from osgeo import gdal
@@ -80,7 +104,7 @@ import numpy as np
 import time
         
 class AffineTransformDecorator:
-    """ A class providing some usefull methods for affine Transformations """
+    """ A class providing some useful methods for affine Transformations """
     def __init__(self, transform ):
         self.geotransform=transform
         self.scaleX=self.geotransform[1]
@@ -290,6 +314,7 @@ class mosaic_info:
         del memDS
         #self.TempDriver.Delete("TEMP")
 
+
     def report( self ):
         print('Filename: '+ self.filename)
         print('File Size: %dx%dx%d' \
@@ -298,6 +323,7 @@ class mosaic_info:
               % (self.scaleX,self.scaleY))
         print('UL:(%f,%f)   LR:(%f,%f)' \
               % (self.ulx,self.uly,self.lrx,self.lry))
+
 
 def getTileIndexFromFiles( inputTiles, driverTyp):
 
@@ -326,11 +352,13 @@ def getTileIndexFromFiles( inputTiles, driverTyp):
     #ogrTileIndexDS.GetLayer().SyncToDisk()
     return ogrTileIndexDS
 
+
 def getTargetDir (level = -1):
     if level == -1:
         return TargetDir
     else:
         return TargetDir + str(level) + os.sep
+
 
 def tileImage(minfo, ti):
     """
@@ -343,7 +371,7 @@ def tileImage(minfo, ti):
     LastRowIndx = -1
     OGRDS=createTileIndex("TileResult_0", TileIndexFieldName, Source_SRS, TileIndexDriverTyp)
     
-    yRanges = np.array(list(split(range(1,ti.countTilesY+1), totalProcs)))
+    yRanges = np.array(list(split(range(1,ti.countTilesY+1), totalProcs)),dtype=object) 
 
     if np.array(yRanges[thisProc-1]).size:
 ##      yRange = list(range(1,ti.countTilesY+1))
@@ -566,8 +594,6 @@ def createTile( minfo, offsetX, offsetY, width, height, tilename, OGRDS):
         t_band = t_fh.GetRasterBand( band )
         if minfo.ct is not None:
             t_band.SetRasterColorTable(minfo.ct)
-
-#        data = s_band.ReadRaster( offsetX,offsetY,width,height,width,height, t_band.DataType )
         data = s_band.ReadRaster( 0, 0, readX, readY, readX, readY, t_band.DataType )
         t_band.WriteRaster( 0, 0, readX, readY, data, readX, readY, t_band.DataType )
 
@@ -578,6 +604,7 @@ def createTile( minfo, offsetX, offsetY, width, height, tilename, OGRDS):
 
     if Verbose:
         print(tilename + " : " + str(offsetX) + "|" + str(offsetY) + "-->" + str(width) + "-" + str(height))
+
 
 def createTileIndex(dsName, fieldName, srs, driverName):
 
@@ -615,6 +642,7 @@ def createTileIndex(dsName, fieldName, srs, driverName):
 
     return OGRDataSource
 
+
 def addFeature(OGRDataSource,location,xlist,ylist):
 
     OGRLayer=OGRDataSource.GetLayer();
@@ -632,11 +660,13 @@ def addFeature(OGRDataSource,location,xlist,ylist):
         sys.exit( 1 )
 
     OGRFeature.SetGeometryDirectly(OGRGeometry)
+
     OGRLayer.CreateFeature(OGRFeature)
     OGRFeature.Destroy()
 
 def closeTileIndex(OGRDataSource):
     OGRDataSource.Destroy()
+
 
 def buildPyramid(minfo, createdTileIndexDS, tileWidth, tileHeight):
 
@@ -648,10 +678,11 @@ def buildPyramid(minfo, createdTileIndexDS, tileWidth, tileHeight):
         levelOutputTileInfo = tile_info(levelMosaicInfo.xsize/2, levelMosaicInfo.ysize/2, tileWidth, tileHeight)
         inputDS = buildPyramidLevel(levelMosaicInfo, levelOutputTileInfo, level)
 
+
 def buildPyramidLevel(levelMosaicInfo, levelOutputTileInfo, level):
 
     try:
-        procYRange = np.array(list(split(range(1, levelOutputTileInfo.countTilesY+1), totalProcs)))
+        procYRange = np.array(list(split(range(1, levelOutputTileInfo.countTilesY+1), totalProcs)),dtype=object) 
         thisProcYRangeStart = procYRange[thisProc-1][0]
         thisProcYRangeEnd = procYRange[thisProc-1][-1]
     except IndexError:
@@ -660,6 +691,7 @@ def buildPyramidLevel(levelMosaicInfo, levelOutputTileInfo, level):
     if np.array(procYRange[thisProc-1]).size:
         yRange = list(range(thisProcYRangeStart, thisProcYRangeEnd+1))
         xRange = list(range(1, levelOutputTileInfo.countTilesX+1))
+
         OGRDS=createTileIndex("TileResult_" + str(level), TileIndexFieldName, Source_SRS, TileIndexDriverTyp)
 
         for yIndex in yRange:
@@ -690,7 +722,7 @@ def buildPyramidLevel(levelMosaicInfo, levelOutputTileInfo, level):
 
         print("process %d/%d: Rows %d-%d of level %s complete." % (thisProc, totalProcs, thisProcYRangeStart, thisProcYRangeEnd,  str(level)))
 
- #      check tile generation of all processes is complete before continuing
+ ##     check tile generation of all processes is complete before continuing on
         xIndex==levelOutputTileInfo.countTilesX
         for procIndex in range(1,totalProcs+1):
             if procIndex == thisProc:
@@ -700,7 +732,7 @@ def buildPyramidLevel(levelMosaicInfo, levelOutputTileInfo, level):
                 last_tile_in_proc_yrange = getTileName(levelMosaicInfo, levelOutputTileInfo, xIndex, endy, level)
                 while not os.path.isfile(last_tile_in_proc_yrange):
                     time.sleep(30)
-                    print ("level %s: waiting for last tile in process %d/%d to be completed..." % (str(level), procIndex, totalProcs))
+                    print ("level %s: waiting for last tile in process %d/%d to complete..." % (str(level), procIndex, totalProcs))
 
         yRange = list(range(1, levelOutputTileInfo.countTilesY+1))        
         xRange = list(range(1, levelOutputTileInfo.countTilesX+1))
@@ -982,7 +1014,7 @@ def main(args = None):
        tileIndexDS.Destroy()
     else:
        dsCreatedTileIndex=tileIndexDS
-	
+
     if Levels > 0:
        buildPyramid(minfo, dsCreatedTileIndex, TileWidth, TileHeight)
 
@@ -1042,8 +1074,8 @@ def initGlobals():
     PyramidOnly=False
     LastRowIndx=-1
     UseDirForEachRow=False
-    totalProcs=4
-    thisProc=1
+    totalProcs=N      #<==== an INPUT, total processes/gdal_retile_multi files used
+    thisProc=n        #<==== an INPUT, this file's process number (1...N)
     yRanges = []
     scriptName='gdal_retile_multi'
     
@@ -1074,8 +1106,8 @@ Levels=0
 PyramidOnly=False
 LastRowIndx=-1
 UseDirForEachRow=False
-totalProcs=4
-thisProc=1
+totalProcs=N      #<==== an INPUT, total processes/gdal_retile_multi files used
+thisProc=n        #<==== an INPUT, this file's process number (1...N)
 yRanges = []
 scriptName = os.path.basename(__file__)
 scriptName = scriptName.split('.')[0]
