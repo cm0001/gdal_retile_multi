@@ -1075,7 +1075,7 @@ def initGlobals():
     LastRowIndx=-1
     UseDirForEachRow=False
     totalProcs=N      #<==== an INPUT, total processes/gdal_retile_multi files used
-    thisProc=n        #<==== an INPUT, this file's process number (1...N)
+    thisProc=p        #<==== an INPUT, this file's process number (1...N)
     yRanges = []
     scriptName='gdal_retile_multi'
     
@@ -1107,7 +1107,7 @@ PyramidOnly=False
 LastRowIndx=-1
 UseDirForEachRow=False
 totalProcs=N      #<==== an INPUT, total processes/gdal_retile_multi files used
-thisProc=n        #<==== an INPUT, this file's process number (1...N)
+thisProc=p        #<==== an INPUT, this file's process number (1...N)
 yRanges = []
 scriptName = os.path.basename(__file__)
 scriptName = scriptName.split('.')[0]
